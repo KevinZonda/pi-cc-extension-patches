@@ -1,7 +1,7 @@
 {
   "name": "pi-cc-extension-patches",
-  "version": "0.1.1",
-  "description": "Personal UI patches for pi-cc-extensions: star spinner, per-turn verbs, and Claude Dark theme.",
+  "version": "0.2.0",
+  "description": "Personal UI patches for pi-cc-extensions: animated header, star spinner, per-turn verbs, and Claude Dark theme.",
   "type": "module",
   "license": "MIT",
   "author": "KevinZonda",
@@ -21,6 +21,7 @@
   "files": [
     "extensions",
     "themes",
+    "assets",
     "README.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md"

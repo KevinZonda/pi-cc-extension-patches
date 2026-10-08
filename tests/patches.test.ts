@@ -88,7 +88,7 @@ function harness() {
   const directory = mkdtempSync(join(tmpdir(), "pi-cc-patches-"));
   const previousDirectory = process.env.PI_CODING_AGENT_DIR;
   process.env.PI_CODING_AGENT_DIR = directory;
-  const events = new Map<string, (...args: any[]) => any>();
+  const events = new Map<string, Array<(...args: any[]) => any>>();
   const indicators: any[] = [];
   const notices: string[] = [];
   let liveLoader: Loader | undefined;
@@ -102,8 +102,12 @@ function harness() {
     notify(message: string) { notices.push(message); },
   };
   const ctx = { hasUI: true, mode: "tui", ui };
-  patches({ on(name: string, fn: (...args: any[]) => any) { events.set(name, fn); }, registerCommand() {} } as unknown as ExtensionAPI);
-  const fire = (name: string) => events.get(name)?.({}, ctx);
+  patches({ on(name: string, fn: (...args: any[]) => any) {
+    const handlers = events.get(name) ?? [];
+    handlers.push(fn);
+    events.set(name, handlers);
+  }, registerCommand() {} } as unknown as ExtensionAPI);
+  const fire = (name: string) => { for (const fn of events.get(name) ?? []) fn({}, ctx); };
   return {
     events, ctx, indicators, notices, fire,
     attach(loader: Loader) { liveLoader = loader; },

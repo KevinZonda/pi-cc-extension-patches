@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { DEFAULT_VERBS } from "./verbs.ts";
 
 export type Config = {
+  headerEnabled: boolean;
   spinnerEnabled: boolean;
   verbsEnabled: boolean;
   intervalMs: number;
@@ -16,6 +17,7 @@ export function normalizeConfig(raw: unknown): Config {
       .filter(word => word.length > 0 && word.length <= 80)
     : [];
   return {
+    headerEnabled: value.headerEnabled !== false,
     spinnerEnabled: value.spinnerEnabled !== false,
     verbsEnabled: value.verbsEnabled !== false,
     intervalMs: typeof value.intervalMs === "number" && Number.isFinite(value.intervalMs)

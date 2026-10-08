@@ -6,6 +6,7 @@
 - 每次 `turn_start` 随机选一个动词，例如 `Baking…`、`Crafting…`；同一轮保持不变。
 - 保留主插件的 token、耗时和 compact 状态摘要。
 - 内置 `claude-dark` 主题：深灰背景、Claude 橙色强调色。
+- cc-my-pi 风格双栏启动头：π 入场动画、模型与思考级别、工作目录、已加载资源统计。
 
 ```text
 ✳ Baking… (↓ 1,234 tokens · 12s)
@@ -57,6 +58,7 @@ pi install /absolute/path/to/pi-cc-extension-patches
 
 ```json
 {
+  "headerEnabled": true,
   "spinnerEnabled": true,
   "verbsEnabled": true,
   "intervalMs": 170,
@@ -68,6 +70,18 @@ pi install /absolute/path/to/pi-cc-extension-patches
 动画速度限制为 50–2000ms。spinner 和动词可以分别关闭。
 `/ccpatches` 查看当前配置。
 
+## 双栏启动头
+
+![双栏启动头预览](assets/header-preview.png)
+
+左侧显示 π 动画、当前模型、思考级别和工作目录；右侧显示设置入口及 skills、prompts、
+extensions 的总数与 global/project 分布。`/loaded` 查看资源名称和主题列表。
+主题不计入 global/project 汇总。统计读取当前会话的资源加载器，不再次执行扩展或扫描文件。
+
+补丁启用时接管启动头，主插件无需关闭 `showStartupHeader`，两种加载顺序都只显示一个 header。
+将 `headerEnabled` 设为 `false` 并 `/reload`，可恢复主插件的启动头。
+终端过窄时隐藏右栏，π 入场动画播放约 1.5 秒后停止。颜色跟随当前主题。
+
 ## 实现与维护
 
 动画通过原生 `setWorkingIndicator()` 设置，仅改变工作状态指示器，颜色使用主题 `accent`。
@@ -76,7 +90,8 @@ pi install /absolute/path/to/pi-cc-extension-patches
 动词通过 Loader 显示边界的轻量原型补丁，只替换 working 指示器中开头的
 `Working...` / `Working…`。主插件保存的原始文字不会改变，不需要重算 token 或添加刷新计时器。
 compact 的 `Running...` 等摘要、重试、压缩和其他加载提示保持原样。
-这一部分依赖 Loader 的内部 `updateDisplay` 方法，升级 Pi 时需要验证。
+动词依赖 Loader 的内部 `updateDisplay` 方法；启动头接入依赖 InteractiveMode 的内部
+`setExtensionHeader` 方法。升级 Pi 时需要验证，目前在 Pi 1.1.0 上验证。
 
 `/reload` 和退出时恢复补丁；所有权检查避免旧实例撤销新实例的补丁。
 

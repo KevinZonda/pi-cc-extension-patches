@@ -2,6 +2,7 @@ import { join } from "node:path";
 import { getAgentDir, type ExtensionAPI, type ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { Loader } from "@earendil-works/pi-tui";
 import { loadConfig } from "./config.ts";
+import { registerHeader } from "./header/index.ts";
 import { spinnerFrames } from "./spinner.ts";
 import { pickVerb } from "./verbs.ts";
 import { installWorkingVerb, replaceWorkingPrefix, type DisplayPrototype } from "./working-verb.ts";
@@ -9,6 +10,7 @@ import { installWorkingVerb, replaceWorkingPrefix, type DisplayPrototype } from 
 export default function patches(pi: ExtensionAPI): void {
   const configPath = join(getAgentDir(), "pi-cc-extension-patches.json");
   const { config, warning } = loadConfig(configPath);
+  registerHeader(pi, config.headerEnabled);
   let currentVerb = "Working";
   let turnActive = false;
   let supported = false;
@@ -72,6 +74,7 @@ export default function patches(pi: ExtensionAPI): void {
     description: "Show personal UI patch settings",
     handler: async (_args, ctx) => {
       ctx.ui.notify([
+        `Claude-style header: ${config.headerEnabled ? "on" : "off"}`,
         `Star spinner: ${config.spinnerEnabled ? "on" : "off"} (${config.intervalMs}ms)`,
         `Random verbs: ${config.verbsEnabled ? "on" : "off"} (${config.verbs.length} words)`,
         `Config: ${configPath} (apply with /reload)`,
