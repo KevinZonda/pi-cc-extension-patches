@@ -1,10 +1,11 @@
 # pi-cc-extension-patches
 
-搭配 `pi-cc-extensions` 使用的个人 UI 补丁包。第一版提供：
+搭配 `pi-cc-extensions` 使用的个人 UI 补丁包。提供：
 
 - 星形 spinner：`· ✢ ✳ ✶ ✻ ✽` 正序、倒序播放，每帧默认 170ms。
 - 每次 `turn_start` 随机选一个动词，例如 `Baking…`、`Crafting…`；同一轮保持不变。
 - 保留主插件的 token、耗时和 compact 状态摘要。
+- 内置 `claude-dark` 主题：深灰背景、Claude 橙色强调色。
 
 ```text
 ✳ Baking… (↓ 1,234 tokens · 12s)
@@ -20,7 +21,21 @@ pi install git:github.com/KevinZonda/pi-cc-extension-patches
 
 然后在 Pi 执行 `/reload`。主插件仍安装 `pi-cc-extensions`；这个包无需安装 `cc-my-pi`。
 如果当前装着完整的 `cc-my-pi`，先移除它，避免两个 UI 套件同时接管界面。
-补丁只在 TUI 模式启用，不改变 print/RPC 输出。
+spinner 和动词补丁只在 TUI 模式启用，不改变 print/RPC 输出。
+
+## Claude Dark 主题
+
+安装或更新后执行 `/reload`，再通过 `/theme` 选择 `claude-dark`。
+也可以在 `~/.pi/agent/settings.json` 中设置：
+
+```json
+{ "theme": "claude-dark" }
+```
+
+主题由包清单自动注册，无需单独复制到用户的 themes 目录。
+配色包含深灰背景、橙色边框与强调色，以及语法高亮、diff、思考级别和 HTML 导出颜色。
+
+## 本地开发
 
 也可以在项目目录里临时加载，退出即结束，不写入安装设置：
 
