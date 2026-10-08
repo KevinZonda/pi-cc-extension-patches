@@ -5,8 +5,8 @@ const BRAILLE = new Set(["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧",
 const PATCH_KEY = Symbol.for("pi.cc-extension-patches.tool-status-dots");
 type Tool = { executionStarted?: boolean; isPartial?: boolean; result?: unknown; children?: Tool[] };
 
-export function toolStatusDot(now: number, running: boolean): string {
-  return !running || Math.floor(now / 500) % 2 === 0 ? "●" : " ";
+export function toolStatusDot(now: number, running: boolean, intervalMs = 600): string {
+  return !running || Math.floor(now / intervalMs) % 2 === 0 ? "●" : " ";
 }
 
 function running(tool: Tool): boolean {
@@ -21,7 +21,7 @@ function isTool(value: unknown): value is Tool & { render(width: number): string
 }
 
 /** Scope icon substitution to actual tool/group rendering, leaving output and other UI text alone. */
-export function installToolStatusDots(): () => void {
+export function installToolStatusDots(intervalMs = 600): () => void {
   const container = Container.prototype;
   const theme = Theme.prototype;
   const host = container as typeof container & { [PATCH_KEY]?: { dispose(): void } };
@@ -34,7 +34,7 @@ export function installToolStatusDots(): () => void {
   const fg: typeof theme.fg = function (this: Theme, color: ThemeColor, text: string) {
     if (active && scope && color === "accent" && BRAILLE.has(text)) {
       const animating = running(scope);
-      return originalFg.call(this, animating ? "success" : "dim", toolStatusDot(Date.now(), animating));
+      return originalFg.call(this, animating ? "success" : "dim", toolStatusDot(Date.now(), animating, intervalMs));
     }
     return originalFg.call(this, color, text);
   };

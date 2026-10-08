@@ -9,6 +9,7 @@ export type Config = {
   toolStatusDotsEnabled: boolean;
   verbsEnabled: boolean;
   intervalMs: number;
+  toolBlinkIntervalMs: number;
   verbs: readonly string[];
 };
 
@@ -28,6 +29,8 @@ export function normalizeConfig(raw: unknown): Config {
     verbsEnabled: value.verbsEnabled !== false,
     intervalMs: typeof value.intervalMs === "number" && Number.isFinite(value.intervalMs)
       ? Math.max(50, Math.min(2000, Math.round(value.intervalMs))) : 170,
+    toolBlinkIntervalMs: typeof value.toolBlinkIntervalMs === "number" && Number.isFinite(value.toolBlinkIntervalMs)
+      ? Math.max(50, Math.min(2000, Math.round(value.toolBlinkIntervalMs))) : 600,
     verbs: customVerbs.length ? customVerbs : DEFAULT_VERBS,
   };
 }

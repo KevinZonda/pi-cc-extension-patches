@@ -63,10 +63,26 @@ test("native spinner reload restores methods without letting stale owners reset 
 
 test("tool dot alternates between a solid green dot and a same-width blank; idle dots stay static", () => {
   assert.equal(toolStatusDot(0, true), "●");
-  assert.equal(toolStatusDot(499, true), "●");
-  assert.equal(toolStatusDot(500, true), " ");
-  assert.equal(toolStatusDot(1000, true), "●");
-  assert.equal(toolStatusDot(500, false), "●");
+  assert.equal(toolStatusDot(599, true), "●");
+  assert.equal(toolStatusDot(600, true), " ");
+  assert.equal(toolStatusDot(1200, true), "●");
+  assert.equal(toolStatusDot(600, false), "●");
+});
+
+test("custom tool blink interval controls actual tool rendering", t => {
+  const dispose = installToolStatusDots(1000);
+  t.after(dispose);
+  t.mock.method(Date, "now", () => 600);
+  const tool = Object.create(ToolExecutionComponent.prototype) as any;
+  tool.executionStarted = true;
+  tool.render = () => [theme.fg("accent", "⠏") + " Read a.ts"];
+  const parent = new Container();
+  parent.addChild(tool);
+  assert.equal(strip(parent.render(80)[0]), "● Read a.ts");
+  (Date.now as any).mock.mockImplementation(() => 1000);
+  assert.equal(strip(parent.render(80)[0]), "  Read a.ts");
+  (Date.now as any).mock.mockImplementation(() => 2000);
+  assert.equal(strip(parent.render(80)[0]), "● Read a.ts");
 });
 
 test("dot substitution is scoped to tool status icons; preserves payload, successes, errors and other UI", t => {
@@ -93,7 +109,7 @@ test("dot substitution is scoped to tool status icons; preserves payload, succes
   const unrelated = new Container();
   unrelated.addChild({ render: () => [theme.fg("accent", "⠏")], invalidate() {} });
   assert.equal(strip(unrelated.render(100)[0]), "⠏");
-  (Date.now as any).mock.mockImplementation(() => 500);
+  (Date.now as any).mock.mockImplementation(() => 600);
   assert.equal(strip(parent.render(100)[0]), "  Bash npm test");
   tool.executionStarted = false;
   assert.equal(strip(parent.render(100)[0]), "● Bash npm test");

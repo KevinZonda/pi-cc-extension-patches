@@ -52,7 +52,7 @@ export default function patches(pi: ExtensionAPI): void {
     if (config.spinnerEnabled) {
       disposeNativeSpinners = installNativeSpinners(Loader.prototype as unknown as LoaderPrototype, config.intervalMs);
     }
-    if (config.toolStatusDotsEnabled) disposeToolStatus = installToolStatusDots();
+    if (config.toolStatusDotsEnabled) disposeToolStatus = installToolStatusDots(config.toolBlinkIntervalMs);
     if (config.compactUserMessages) {
       disposeUserMessages = installCompactUserMessages(UserMessageComponent.prototype as unknown as MessagePrototype);
     }
@@ -103,7 +103,7 @@ export default function patches(pi: ExtensionAPI): void {
         `Header animation: ${config.headerAnimationEnabled ? "on" : "off"}`,
         `Compact user messages: ${config.compactUserMessages ? "on" : "off"}`,
         `Star spinner: ${config.spinnerEnabled ? "on" : "off"} (${config.intervalMs}ms)`,
-        `Tool status dots: ${config.toolStatusDotsEnabled ? "on" : "off"}`,
+        `Tool status dots: ${config.toolStatusDotsEnabled ? "on" : "off"} (${config.toolBlinkIntervalMs}ms per phase)`,
         `Random verbs: ${config.verbsEnabled ? "on" : "off"} (${config.verbs.length} words)`,
         `Config: ${configPath} (apply with /reload)`,
       ].join("\n"), "info");

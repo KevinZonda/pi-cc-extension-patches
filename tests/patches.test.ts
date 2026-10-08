@@ -78,6 +78,14 @@ test("config validates timer bounds and strips terminal controls from custom ver
   assert.equal(normalizeConfig({ intervalMs: -1 }).intervalMs, 50);
   assert.equal(normalizeConfig({ intervalMs: Infinity }).intervalMs, 170);
   assert.equal(normalizeConfig({ intervalMs: 9000 }).intervalMs, 2000);
+  assert.equal(normalizeConfig({}).toolBlinkIntervalMs, 600);
+  assert.equal(normalizeConfig({ toolBlinkIntervalMs: -1 }).toolBlinkIntervalMs, 50);
+  assert.equal(normalizeConfig({ toolBlinkIntervalMs: Infinity }).toolBlinkIntervalMs, 600);
+  assert.equal(normalizeConfig({ toolBlinkIntervalMs: "1000" }).toolBlinkIntervalMs, 600);
+  assert.equal(normalizeConfig({ toolBlinkIntervalMs: 9000 }).toolBlinkIntervalMs, 2000);
+  const independent = normalizeConfig({ intervalMs: 200, toolBlinkIntervalMs: 1000.4 });
+  assert.equal(independent.intervalMs, 200);
+  assert.equal(independent.toolBlinkIntervalMs, 1000);
   assert.deepEqual(normalizeConfig({ verbs: [null, "", " Baking\n\u001b "] }).verbs, ["Baking"]);
   assert.ok(normalizeConfig({ verbs: [] }).verbs.length > 100);
   assert.equal(normalizeConfig({ spinnerEnabled: false }).spinnerEnabled, false);

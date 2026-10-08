@@ -3,7 +3,7 @@
 搭配 `pi-cc-extensions` 使用的个人 UI 补丁包。提供：
 
 - 星形 spinner：`· ✢ ✳ ✶ ✻ ✽` 正序、倒序播放，每帧默认 170ms。
-- 工具执行状态：bash、read 等工具名前显示绿色实心圆，每 500ms 在圆点和空格间切换。
+- 工具执行状态：bash、read 等工具名前显示绿色实心圆，每 600ms 在圆点和空格间切换，一轮 1.2 秒。
 - 每次 `turn_start` 随机选一个动词，例如 `Baking…`、`Crafting…`；同一轮保持不变。
 - 保留主插件的 token、耗时和 compact 状态摘要。
 - 内置 `claude-dark` 主题：深灰背景、Claude 橙色强调色。
@@ -67,12 +67,16 @@ pi install /absolute/path/to/pi-cc-extension-patches
   "toolStatusDotsEnabled": true,
   "verbsEnabled": true,
   "intervalMs": 170,
+  "toolBlinkIntervalMs": 600,
   "verbs": ["Baking", "Crafting", "Thinking", "Cooking"]
 }
 ```
 
 省略 `verbs` 使用 cc-my-pi 的完整动词列表。空数组也回退到默认列表。
-动画速度限制为 50–2000ms。spinner、工具状态圆点和动词可以分别关闭。
+`intervalMs` 控制星形动画的每帧间隔，默认 170ms。
+`toolBlinkIntervalMs` 独立控制工具圆点每次显示或隐藏的时长，默认 600ms（一轮 1.2 秒）；
+例如设为 1000 即显示 1 秒、隐藏 1 秒。两个间隔均限制为 50–2000ms。
+spinner、工具状态圆点和动词可以分别关闭。
 `/ccpatches` 查看当前配置。
 
 `compactUserMessages` 默认开启，只影响发送后的用户消息，不改变输入框。
