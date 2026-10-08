@@ -37,7 +37,7 @@ export function installHeaderSlot(prototype: HeaderPrototype, factory: (mode: Mo
   return () => patch.dispose();
 }
 
-export function registerHeader(pi: ExtensionAPI, enabled: boolean): void {
+export function registerHeader(pi: ExtensionAPI, enabled: boolean, animate = false): void {
   if (!enabled) return;
   const prototype = InteractiveMode.prototype as unknown as HeaderPrototype;
   if (typeof prototype.setExtensionHeader !== "function") return;
@@ -71,7 +71,7 @@ export function registerHeader(pi: ExtensionAPI, enabled: boolean): void {
       try { return currentCtx?.ui.theme ?? currentTheme!; } catch { return currentTheme!; }
     }, () => {
       if (!shutdown) tui.requestRender();
-    });
+    }, animate);
     return activeHeader;
   };
   const disposeSlot = installHeaderSlot(prototype, factory);

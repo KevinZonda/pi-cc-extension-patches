@@ -1,6 +1,6 @@
 {
   "name": "pi-cc-extension-patches",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Personal UI patches for pi-cc-extensions: animated header, compact user messages, star spinner, per-turn verbs, and Claude Dark theme.",
   "type": "module",
   "license": "MIT",

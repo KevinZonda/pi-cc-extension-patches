@@ -6,7 +6,7 @@
 - 每次 `turn_start` 随机选一个动词，例如 `Baking…`、`Crafting…`；同一轮保持不变。
 - 保留主插件的 token、耗时和 compact 状态摘要。
 - 内置 `claude-dark` 主题：深灰背景、Claude 橙色强调色。
-- cc-my-pi 风格双栏启动头：π 入场动画、模型与思考级别、工作目录、已加载资源统计。
+- cc-my-pi 风格双栏启动头：静态 π 图案、可选入场动画、模型与思考级别、工作目录、已加载资源统计。
 - 紧凑用户消息：移除发送后消息的上下 padding，保留背景、左右间距和正文空行。
 
 ```text
@@ -60,6 +60,7 @@ pi install /absolute/path/to/pi-cc-extension-patches
 ```json
 {
   "headerEnabled": true,
+  "headerAnimationEnabled": false,
   "compactUserMessages": true,
   "spinnerEnabled": true,
   "verbsEnabled": true,
@@ -80,13 +81,15 @@ pi install /absolute/path/to/pi-cc-extension-patches
 
 ![双栏启动头预览](assets/header-preview.png)
 
-左侧显示 π 动画、当前模型、思考级别和工作目录；右侧显示设置入口及 skills、prompts、
+左侧显示 π 图案、当前模型、思考级别和工作目录；右侧显示设置入口及 skills、prompts、
 extensions 的总数与 global/project 分布。`/loaded` 查看资源名称和主题列表。
 主题不计入 global/project 汇总。统计读取当前会话的资源加载器，不再次执行扩展或扫描文件。
 
 补丁启用时接管启动头，主插件无需关闭 `showStartupHeader`，两种加载顺序都只显示一个 header。
 将 `headerEnabled` 设为 `false` 并 `/reload`，可恢复主插件的启动头。
-终端过窄时隐藏右栏，π 入场动画播放约 1.5 秒后停止。颜色跟随当前主题。
+终端过窄时隐藏右栏。默认直接显示完整的橙色 π，不播放入场动画。
+将 `headerAnimationEnabled` 设为 `true` 并 `/reload` 可启用约 1.5 秒的入场动画，
+播放后停止。颜色跟随当前主题。
 
 ## 实现与维护
 

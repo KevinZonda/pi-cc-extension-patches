@@ -11,7 +11,7 @@ import { installWorkingVerb, replaceWorkingPrefix, type DisplayPrototype } from 
 export default function patches(pi: ExtensionAPI): void {
   const configPath = join(getAgentDir(), "pi-cc-extension-patches.json");
   const { config, warning } = loadConfig(configPath);
-  registerHeader(pi, config.headerEnabled);
+  registerHeader(pi, config.headerEnabled, config.headerAnimationEnabled);
   let currentVerb = "Working";
   let turnActive = false;
   let supported = false;
@@ -84,6 +84,7 @@ export default function patches(pi: ExtensionAPI): void {
     handler: async (_args, ctx) => {
       ctx.ui.notify([
         `Claude-style header: ${config.headerEnabled ? "on" : "off"}`,
+        `Header animation: ${config.headerAnimationEnabled ? "on" : "off"}`,
         `Compact user messages: ${config.compactUserMessages ? "on" : "off"}`,
         `Star spinner: ${config.spinnerEnabled ? "on" : "off"} (${config.intervalMs}ms)`,
         `Random verbs: ${config.verbsEnabled ? "on" : "off"} (${config.verbs.length} words)`,
