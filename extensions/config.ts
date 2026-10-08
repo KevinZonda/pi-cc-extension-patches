@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { DEFAULT_VERBS } from "./verbs.ts";
 
 export type Config = {
+  compactUserMessages: boolean;
   headerEnabled: boolean;
   spinnerEnabled: boolean;
   verbsEnabled: boolean;
@@ -17,6 +18,7 @@ export function normalizeConfig(raw: unknown): Config {
       .filter(word => word.length > 0 && word.length <= 80)
     : [];
   return {
+    compactUserMessages: value.compactUserMessages !== false,
     headerEnabled: value.headerEnabled !== false,
     spinnerEnabled: value.spinnerEnabled !== false,
     verbsEnabled: value.verbsEnabled !== false,

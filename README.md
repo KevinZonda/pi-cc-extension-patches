@@ -7,6 +7,7 @@
 - 保留主插件的 token、耗时和 compact 状态摘要。
 - 内置 `claude-dark` 主题：深灰背景、Claude 橙色强调色。
 - cc-my-pi 风格双栏启动头：π 入场动画、模型与思考级别、工作目录、已加载资源统计。
+- 紧凑用户消息：移除发送后消息的上下 padding，保留背景、左右间距和正文空行。
 
 ```text
 ✳ Baking… (↓ 1,234 tokens · 12s)
@@ -59,6 +60,7 @@ pi install /absolute/path/to/pi-cc-extension-patches
 ```json
 {
   "headerEnabled": true,
+  "compactUserMessages": true,
   "spinnerEnabled": true,
   "verbsEnabled": true,
   "intervalMs": 170,
@@ -69,6 +71,10 @@ pi install /absolute/path/to/pi-cc-extension-patches
 省略 `verbs` 使用 cc-my-pi 的完整动词列表。空数组也回退到默认列表。
 动画速度限制为 50–2000ms。spinner 和动词可以分别关闭。
 `/ccpatches` 查看当前配置。
+
+`compactUserMessages` 默认开启，只影响发送后的用户消息，不改变输入框。
+设为 `false` 并 `/reload` 可恢复原生上下 padding。补丁在原生 Markdown 结果上只移除
+明确添加的 padding 行，正文空行、代码块、图片行以及终端复制区域标记均保留。
 
 ## 双栏启动头
 
@@ -90,6 +96,7 @@ extensions 的总数与 global/project 分布。`/loaded` 查看资源名称和�
 动词通过 Loader 显示边界的轻量原型补丁，只替换 working 指示器中开头的
 `Working...` / `Working…`。主插件保存的原始文字不会改变，不需要重算 token 或添加刷新计时器。
 compact 的 `Running...` 等摘要、重试、压缩和其他加载提示保持原样。
+紧凑用户消息依赖 UserMessageComponent 的渲染结构与 Markdown 的内部 padding 字段。
 动词依赖 Loader 的内部 `updateDisplay` 方法；启动头接入依赖 InteractiveMode 的内部
 `setExtensionHeader` 方法。升级 Pi 时需要验证，目前在 Pi 1.1.0 上验证。
 
