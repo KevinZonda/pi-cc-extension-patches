@@ -6,6 +6,7 @@ export type Config = {
   headerEnabled: boolean;
   headerAnimationEnabled: boolean;
   spinnerEnabled: boolean;
+  toolStatusDotsEnabled: boolean;
   verbsEnabled: boolean;
   intervalMs: number;
   verbs: readonly string[];
@@ -23,6 +24,7 @@ export function normalizeConfig(raw: unknown): Config {
     headerEnabled: value.headerEnabled !== false,
     headerAnimationEnabled: value.headerAnimationEnabled === true,
     spinnerEnabled: value.spinnerEnabled !== false,
+    toolStatusDotsEnabled: value.toolStatusDotsEnabled !== false,
     verbsEnabled: value.verbsEnabled !== false,
     intervalMs: typeof value.intervalMs === "number" && Number.isFinite(value.intervalMs)
       ? Math.max(50, Math.min(2000, Math.round(value.intervalMs))) : 170,

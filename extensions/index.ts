@@ -4,6 +4,8 @@ import { Loader } from "@earendil-works/pi-tui";
 import { loadConfig } from "./config.ts";
 import { registerHeader } from "./header/index.ts";
 import { spinnerFrames } from "./spinner.ts";
+import { installNativeSpinners, type LoaderPrototype } from "./native-spinners.ts";
+import { installToolStatusDots } from "./tool-status.ts";
 import { pickVerb } from "./verbs.ts";
 import { installCompactUserMessages, type MessagePrototype } from "./user-messages.ts";
 import { installWorkingVerb, replaceWorkingPrefix, type DisplayPrototype } from "./working-verb.ts";
@@ -17,6 +19,8 @@ export default function patches(pi: ExtensionAPI): void {
   let supported = false;
   let disposeVerb: (() => void) | undefined;
   let disposeUserMessages: (() => void) | undefined;
+  let disposeNativeSpinners: (() => void) | undefined;
+  let disposeToolStatus: (() => void) | undefined;
   let indicatorUi: ExtensionContext["ui"] | undefined;
   // A distinct owner per factory prevents an old shutdown handler resetting a new installation.
   const owner = {};
@@ -40,7 +44,15 @@ export default function patches(pi: ExtensionAPI): void {
     disposeVerb = undefined;
     disposeUserMessages?.();
     disposeUserMessages = undefined;
+    disposeNativeSpinners?.();
+    disposeNativeSpinners = undefined;
+    disposeToolStatus?.();
+    disposeToolStatus = undefined;
     if (!ctx.hasUI || ctx.mode !== "tui") return;
+    if (config.spinnerEnabled) {
+      disposeNativeSpinners = installNativeSpinners(Loader.prototype as unknown as LoaderPrototype, config.intervalMs);
+    }
+    if (config.toolStatusDotsEnabled) disposeToolStatus = installToolStatusDots();
     if (config.compactUserMessages) {
       disposeUserMessages = installCompactUserMessages(UserMessageComponent.prototype as unknown as MessagePrototype);
     }
@@ -72,6 +84,10 @@ export default function patches(pi: ExtensionAPI): void {
     disposeVerb = undefined;
     disposeUserMessages?.();
     disposeUserMessages = undefined;
+    disposeNativeSpinners?.();
+    disposeNativeSpinners = undefined;
+    disposeToolStatus?.();
+    disposeToolStatus = undefined;
     if (host[ownerKey] === owner) {
       delete host[ownerKey];
       try { indicatorUi?.setWorkingIndicator(); } catch { /* Context may already be replaced. */ }
@@ -87,6 +103,7 @@ export default function patches(pi: ExtensionAPI): void {
         `Header animation: ${config.headerAnimationEnabled ? "on" : "off"}`,
         `Compact user messages: ${config.compactUserMessages ? "on" : "off"}`,
         `Star spinner: ${config.spinnerEnabled ? "on" : "off"} (${config.intervalMs}ms)`,
+        `Tool status dots: ${config.toolStatusDotsEnabled ? "on" : "off"}`,
         `Random verbs: ${config.verbsEnabled ? "on" : "off"} (${config.verbs.length} words)`,
         `Config: ${configPath} (apply with /reload)`,
       ].join("\n"), "info");

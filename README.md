@@ -3,6 +3,7 @@
 搭配 `pi-cc-extensions` 使用的个人 UI 补丁包。提供：
 
 - 星形 spinner：`· ✢ ✳ ✶ ✻ ✽` 正序、倒序播放，每帧默认 170ms。
+- 工具执行状态：bash、read 等工具名前显示绿色实心圆，每 500ms 在圆点和空格间切换。
 - 每次 `turn_start` 随机选一个动词，例如 `Baking…`、`Crafting…`；同一轮保持不变。
 - 保留主插件的 token、耗时和 compact 状态摘要。
 - 内置 `claude-dark` 主题：深灰背景、Claude 橙色强调色。
@@ -63,6 +64,7 @@ pi install /absolute/path/to/pi-cc-extension-patches
   "headerAnimationEnabled": false,
   "compactUserMessages": true,
   "spinnerEnabled": true,
+  "toolStatusDotsEnabled": true,
   "verbsEnabled": true,
   "intervalMs": 170,
   "verbs": ["Baking", "Crafting", "Thinking", "Cooking"]
@@ -70,7 +72,7 @@ pi install /absolute/path/to/pi-cc-extension-patches
 ```
 
 省略 `verbs` 使用 cc-my-pi 的完整动词列表。空数组也回退到默认列表。
-动画速度限制为 50–2000ms。spinner 和动词可以分别关闭。
+动画速度限制为 50–2000ms。spinner、工具状态圆点和动词可以分别关闭。
 `/ccpatches` 查看当前配置。
 
 `compactUserMessages` 默认开启，只影响发送后的用户消息，不改变输入框。
@@ -93,15 +95,25 @@ extensions 的总数与 global/project 分布。`/loaded` 查看资源名称和�
 
 ## 实现与维护
 
-动画通过原生 `setWorkingIndicator()` 设置，仅改变工作状态指示器，颜色使用主题 `accent`。
-动画定时器由 Pi 管理；每轮重新绑定主题颜色。
+工作状态的星形动画通过原生 `setWorkingIndicator()` 设置，颜色使用主题 `accent`。
+默认原生 Loader 也使用同样的星形帧，因此手动 `!command`、重试、上下文压缩、分支摘要
+和其他原生加载提示均使用星形动画，保留各自的提示文字与颜色。
+显式自定义或隐藏的 indicator 保留。定时器由 Pi 管理，补丁只改变默认帧和间隔，
+不重写 Loader 的 start/stop；关闭补丁时恢复已有实例和原型。
+
+工具卡与工具分组里的独立点阵状态图标，在工具渲染范围内改为绿色实心圆闪烁。
+尚未开始执行的工具显示静态暗色圆点；完成的 `✓`、失败的 `✗` 和输出正文保留。
+工具卡继续使用主插件的刷新机制，补丁不新增动画计时器。
+`toolStatusDotsEnabled: false` 可恢复主插件的点阵图标。
 
 动词通过 Loader 显示边界的轻量原型补丁，只替换 working 指示器中开头的
 `Working...` / `Working…`。主插件保存的原始文字不会改变，不需要重算 token 或添加刷新计时器。
-compact 的 `Running...` 等摘要、重试、压缩和其他加载提示保持原样。
+compact 的 `Running...` 等摘要、重试、压缩和其他加载提示的文字保持原样。
 紧凑用户消息依赖 UserMessageComponent 的渲染结构与 Markdown 的内部 padding 字段。
 动词依赖 Loader 的内部 `updateDisplay` 方法；启动头接入依赖 InteractiveMode 的内部
-`setExtensionHeader` 方法。升级 Pi 时需要验证，目前在 Pi 1.1.0 上验证。
+`setExtensionHeader` 方法。默认星形动画依赖 Loader 的 `setIndicator` 与 `getRenderedIndicator`，
+工具状态补丁依赖 Container、Theme 及主插件的工具分组标记。升级 Pi 或主插件时需要验证，
+目前在 Pi 1.1.0、pi-cc-extensions 0.9.11 上验证。
 
 `/reload` 和退出时恢复补丁；所有权检查避免旧实例撤销新实例的补丁。
 
