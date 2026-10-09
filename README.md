@@ -6,7 +6,7 @@
 - 工具执行状态：bash、read 等工具名前显示绿色实心圆，每 600ms 在圆点和空格间切换，一轮 1.2 秒。
 - 每次 `turn_start` 随机选一个动词，例如 `Baking…`、`Crafting…`；同一轮保持不变。
 - 保留主插件的 token、耗时和 compact 状态摘要。
-- 内置 `claude-dark` 主题：深灰背景、Claude 橙色强调色。
+- 内置 `claude-dark` 和 `cc-light` 主题：深灰或中性浅灰背景、Claude 橙色强调色。
 - cc-my-pi 风格双栏启动头：静态 π 图案、可选入场动画、模型与思考级别、工作目录、已加载资源统计。
 - 紧凑用户消息：移除发送后消息的上下 padding，保留背景、左右间距和正文空行。
 - 输入框与用户消息显示 `❯ ` 前缀，续行对齐；只装饰显示，不加入草稿或发给模型的正文。
@@ -27,9 +27,9 @@ pi install git:github.com/KevinZonda/pi-cc-extension-patches
 如果当前装着完整的 `cc-my-pi`，先移除它，避免两个 UI 套件同时接管界面。
 spinner 和动词补丁只在 TUI 模式启用，不改变 print/RPC 输出。
 
-## Claude Dark 主题
+## Claude 主题
 
-安装或更新后执行 `/reload`，再通过 `/theme` 选择 `claude-dark`。
+安装或更新后执行 `/reload`，再通过 `/settings` 的 Theme 选择 `claude-dark` 或 `cc-light`。
 也可以在 `~/.pi/agent/settings.json` 中设置：
 
 ```json
@@ -37,7 +37,9 @@ spinner 和动词补丁只在 TUI 模式启用，不改变 print/RPC 输出。
 ```
 
 主题由包清单自动注册，无需单独复制到用户的 themes 目录。
-配色包含深灰背景、橙色边框与强调色，以及语法高亮、diff、思考级别和 HTML 导出颜色。
+`claude-dark` 使用深灰背景；`cc-light` 使用黑色正文、中性灰消息与工具背景，失败工具保留淡红背景。
+浅色主题只在重点提示中使用品牌橙，标题和行内代码使用正文色，避免浅底上的亮橙文字。
+两者均包含语法高亮、diff、思考级别和 HTML 导出颜色；浅色配色是近似风格，不是 Claude Code 的官方色表。
 
 ## 本地开发
 

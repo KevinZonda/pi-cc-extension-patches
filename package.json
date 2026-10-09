@@ -1,7 +1,7 @@
 {
   "name": "pi-cc-extension-patches",
   "version": "0.3.1",
-  "description": "Personal UI patches for pi-cc-extensions: header, compact messages, tool status dots, star spinners, per-turn verbs, and Claude Dark theme.",
+  "description": "Personal UI patches for pi-cc-extensions: header, compact messages, tool status dots, star spinners, per-turn verbs, and Claude-style dark and light themes.",
   "type": "module",
   "license": "MIT",
   "author": "KevinZonda",
@@ -31,7 +31,8 @@
       "./extensions/index.ts"
     ],
     "themes": [
-      "./themes/claude-dark.json"
+      "./themes/claude-dark.json",
+      "./themes/claude-light.json"
     ]
   },
   "scripts": {
