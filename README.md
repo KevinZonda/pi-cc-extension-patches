@@ -9,6 +9,7 @@
 - 内置 `claude-dark` 主题：深灰背景、Claude 橙色强调色。
 - cc-my-pi 风格双栏启动头：静态 π 图案、可选入场动画、模型与思考级别、工作目录、已加载资源统计。
 - 紧凑用户消息：移除发送后消息的上下 padding，保留背景、左右间距和正文空行。
+- 输入框与用户消息显示 `❯ ` 前缀，续行对齐；只装饰显示，不加入草稿或发给模型的正文。
 
 ```text
 ✳ Baking… (↓ 1,234 tokens · 12s)
@@ -63,6 +64,7 @@ pi install /absolute/path/to/pi-cc-extension-patches
   "headerEnabled": true,
   "headerAnimationEnabled": false,
   "compactUserMessages": true,
+  "promptPrefixEnabled": true,
   "spinnerEnabled": true,
   "toolStatusDotsEnabled": true,
   "verbsEnabled": true,
@@ -79,9 +81,17 @@ pi install /absolute/path/to/pi-cc-extension-patches
 spinner、工具状态圆点和动词可以分别关闭。
 `/ccpatches` 查看当前配置。
 
-`compactUserMessages` 默认开启，只影响发送后的用户消息，不改变输入框。
-设为 `false` 并 `/reload` 可恢复原生上下 padding。补丁在原生 Markdown 结果上只移除
-明确添加的 padding 行，正文空行、代码块、图片行以及终端复制区域标记均保留。
+`compactUserMessages` 默认开启，只控制发送后消息的上下 padding。
+设为 `false` 并 `/reload` 可恢复原生上下 padding。正文空行、代码块、图片行与终端复制区域标记均保留。
+
+`promptPrefixEnabled` 默认开启，输入框和用户消息第一条内容行显示主题强调色的 `❯ `，
+续行对齐，并保留原生左右间距；可独立设为 `false` 后 `/reload` 关闭。
+输入以 `!` 或 `!!` 开头时保留原生 shell 显示，不额外叠加 `❯`。
+补丁在原生布局中预留前缀列，保持换行、光标、IME 硬件光标标记、鼠标点击与补全菜单一致。
+图片终端协议行不加前缀；消息窗口小于 4 列时回退到原显示。
+输入框可用宽度不足以预留前缀并容纳双宽字符时也回退，避免中文/emoji 的原生换行错误。
+仅 TUI 启用，不修改模型消息、草稿、提交内容或 print/RPC 输出，也不替换现有编辑器组件。
+编辑器补丁覆盖继承当前 Pi `CustomEditor` 的编辑器；另带 Pi 副本或完全独立的编辑器不保证覆盖。
 
 ## 双栏启动头
 
@@ -113,7 +123,8 @@ extensions 的总数与 global/project 分布。`/loaded` 查看资源名称和�
 动词通过 Loader 显示边界的轻量原型补丁，只替换 working 指示器中开头的
 `Working...` / `Working…`。主插件保存的原始文字不会改变，不需要重算 token 或添加刷新计时器。
 compact 的 `Running...` 等摘要、重试、压缩和其他加载提示的文字保持原样。
-紧凑用户消息依赖 UserMessageComponent 的渲染结构与 Markdown 的内部 padding 字段。
+紧凑用户消息与消息前缀依赖 UserMessageComponent 的渲染结构与 Markdown 的内部 padding 字段；
+输入前缀依赖 CustomEditor 的渲染方法、可见内容行数与鼠标事件坐标结构。
 动词依赖 Loader 的内部 `updateDisplay` 方法；启动头接入依赖 InteractiveMode 的内部
 `setExtensionHeader` 方法。默认星形动画依赖 Loader 的 `setIndicator` 与 `getRenderedIndicator`，
 工具状态补丁依赖 Container、Theme 及主插件的工具分组标记。升级 Pi 或主插件时需要验证，

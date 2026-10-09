@@ -3,6 +3,7 @@ import { DEFAULT_VERBS } from "./verbs.ts";
 
 export type Config = {
   compactUserMessages: boolean;
+  promptPrefixEnabled: boolean;
   headerEnabled: boolean;
   headerAnimationEnabled: boolean;
   spinnerEnabled: boolean;
@@ -22,6 +23,7 @@ export function normalizeConfig(raw: unknown): Config {
     : [];
   return {
     compactUserMessages: value.compactUserMessages !== false,
+    promptPrefixEnabled: value.promptPrefixEnabled !== false,
     headerEnabled: value.headerEnabled !== false,
     headerAnimationEnabled: value.headerAnimationEnabled === true,
     spinnerEnabled: value.spinnerEnabled !== false,

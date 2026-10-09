@@ -79,6 +79,8 @@ test("config validates timer bounds and strips terminal controls from custom ver
   assert.equal(normalizeConfig({ intervalMs: Infinity }).intervalMs, 170);
   assert.equal(normalizeConfig({ intervalMs: 9000 }).intervalMs, 2000);
   assert.equal(normalizeConfig({}).toolBlinkIntervalMs, 600);
+  assert.equal(normalizeConfig({}).promptPrefixEnabled, true);
+  assert.equal(normalizeConfig({ promptPrefixEnabled: false }).promptPrefixEnabled, false);
   assert.equal(normalizeConfig({ toolBlinkIntervalMs: -1 }).toolBlinkIntervalMs, 50);
   assert.equal(normalizeConfig({ toolBlinkIntervalMs: Infinity }).toolBlinkIntervalMs, 600);
   assert.equal(normalizeConfig({ toolBlinkIntervalMs: "1000" }).toolBlinkIntervalMs, 600);
